@@ -1,0 +1,2 @@
+date,datetime,cash_type,card,money,coffee_name,total_amount,hour,weekday,payment_method
+2024-03-01,2024-03-01 10:15:50.520,card,0.0,38.7,Latte,38.7,10,Friday,cash

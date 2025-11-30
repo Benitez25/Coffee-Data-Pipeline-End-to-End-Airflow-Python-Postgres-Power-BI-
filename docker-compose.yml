@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+      - ./scripts:/opt/airflow/scripts
+      - ./data:/opt/airflow/data
+  airflow:
+    image: apache/airflow:2.8.1
+    depends_on:
+      - postgres
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: "mysecretkey"
+    volumes:
+      - ./airflow/dags/:/opt/airflow/dags/
+      - ./airflow/data/:/opt/airflow/data/
+      - ./airflow/processed/:/opt/airflow/processed/
+      - ./scripts/:/opt/airflow/scripts/
+    ports:
+      - "8080:8080"
+    command: >
+      bash -c "
+        airflow db init &&
+        airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin &&
+        airflow webserver
+      "
+  airflow-scheduler:
+    image: apache/airflow:2.8.1
+    depends_on:
+      - postgres
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: "mysecretkey"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./scripts/:/opt/airflow/scripts/
+      - ./airflow/data/:/opt/airflow/data/
+      - ./airflow/processed/:/opt/airflow/processed/
+    command: >
+      bash -c "airflow scheduler"
