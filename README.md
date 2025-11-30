@@ -1,4 +1,4 @@
-# Coffee-Data-Pipeline-End-to-End-Airflow-Python-Postgres-Power-BI-
+# Resumen
 
 📌 Titulo: Pipeline de Datos End-to-End para Ventas de Cafetería (Airflow + Postgres + Power BI)
 
